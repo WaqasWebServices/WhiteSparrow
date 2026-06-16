@@ -1,0 +1,147 @@
+<style>
+  .ws-yotpo-featured-quotes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin: 28px 45px 30px;
+    text-align: left;
+  }
+
+  .ws-yotpo-featured-quote {
+    border: 1px solid rgba(62, 62, 62, 0.16);
+    background: #f8f7f2;
+    padding: 20px 22px;
+  }
+
+  .ws-yotpo-featured-quote__text {
+    margin: 0 0 14px;
+    color: #3e3e3e;
+    font-size: 18px;
+    line-height: 1.45;
+  }
+
+  .ws-yotpo-featured-quote__meta {
+    align-items: center;
+    color: #3e3e3e;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 15px;
+    gap: 8px;
+    justify-content: space-between;
+    line-height: 1.3;
+  }
+
+  .ws-yotpo-featured-quote__stars {
+    color: #3f4954;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  @media only screen and (max-width: 769px) {
+    .ws-yotpo-featured-quotes {
+      grid-template-columns: 1fr;
+      margin: 24px 20px 26px;
+    }
+
+    .ws-yotpo-featured-quote {
+      padding: 18px;
+    }
+
+    .ws-yotpo-featured-quote__text {
+      font-size: 16px;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    var QUOTES_CLASS = 'ws-yotpo-featured-quotes';
+    var quoteMarkup = [
+      '<div class="ws-yotpo-featured-quote">',
+        '<p class="ws-yotpo-featured-quote__text">"I\'ve had eczema my whole life and have tried every \'natural\' moisturizer on the market. This is the first one that didn\'t make my skin angrier. Two weeks in and my hands look completely different."</p>',
+        '<div class="ws-yotpo-featured-quote__meta">',
+          '<span>Sarah M., Verified Customer</span>',
+          '<span class="ws-yotpo-featured-quote__stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>',
+        '</div>',
+      '</div>',
+      '<div class="ws-yotpo-featured-quote">',
+        '<p class="ws-yotpo-featured-quote__text">"My daughter has super sensitive skin and breaks out from everything. We\'ve been using the tallow balm for a month and her skin is the clearest it\'s been in years. I\'m not exaggerating."</p>',
+        '<div class="ws-yotpo-featured-quote__meta">',
+          '<span>Jennifer K., Verified Customer</span>',
+          '<span class="ws-yotpo-featured-quote__stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>',
+        '</div>',
+      '</div>'
+    ].join('');
+
+    function findExactText(root, text) {
+      var nodes = root.querySelectorAll('h1, h2, h3, h4, div, span, p, button, a');
+
+      for (var i = 0; i < nodes.length; i++) {
+        if ((nodes[i].textContent || '').trim() === text) {
+          return nodes[i];
+        }
+      }
+
+      return null;
+    }
+
+    function findReviewTabs(root) {
+      var siteReviews = findExactText(root, 'Site Reviews');
+      var node = siteReviews;
+
+      while (node && node !== root) {
+        var text = (node.textContent || '').replace(/\s+/g, ' ').trim();
+
+        if (text.indexOf('Site Reviews') !== -1 && text.indexOf('Product Reviews') !== -1 && text.length < 80) {
+          return node;
+        }
+
+        node = node.parentElement;
+      }
+
+      return null;
+    }
+
+    function getTestimonialsPanel() {
+      var heading = findExactText(document, 'Customer Testimonials');
+
+      if (!heading) {
+        return null;
+      }
+
+      return heading.closest('[role="dialog"], .yotpo-modal, .yotpo-reviews-tab-modal, .yotpo-modal-content, body') || document.body;
+    }
+
+    function insertFeaturedQuotes() {
+      var panel = getTestimonialsPanel();
+
+      if (!panel || panel.querySelector('.' + QUOTES_CLASS)) {
+        return;
+      }
+
+      var tabs = findReviewTabs(panel);
+
+      if (!tabs) {
+        return;
+      }
+
+      var quotes = document.createElement('div');
+      quotes.className = QUOTES_CLASS;
+      quotes.innerHTML = quoteMarkup;
+      tabs.parentNode.insertBefore(quotes, tabs);
+    }
+
+    document.addEventListener('DOMContentLoaded', insertFeaturedQuotes);
+    document.addEventListener('click', function() {
+      window.setTimeout(insertFeaturedQuotes, 250);
+      window.setTimeout(insertFeaturedQuotes, 1000);
+    });
+
+    if ('MutationObserver' in window) {
+      new MutationObserver(insertFeaturedQuotes).observe(document.documentElement, {
+        childList: true,
+        subtree: true
+      });
+    }
+  })();
+</script>
