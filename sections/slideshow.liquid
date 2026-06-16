@@ -144,7 +144,7 @@
               {%- liquid
                 assign hero_text = false
                 assign link_slide = false
-                if block.settings.top_subheading != blank or block.settings.title != blank or block.settings.subheading != blank or block.settings.link_text != blank
+                if block.settings.top_subheading != blank or block.settings.title != blank or block.settings.subheading != blank or block.settings.link_text != blank or block.settings.trust_text != blank
                   assign hero_text = true
                 endif
                 if block.settings.link != blank and block.settings.link_2 == blank
@@ -243,7 +243,7 @@
                             </div></div>
                           </h2>
                         {%- endunless -%}
-                        {%- if block.settings.subheading or block.settings.link or block.settings.link_2 -%}
+                        {%- if block.settings.subheading or block.settings.link or block.settings.link_2 or block.settings.trust_text != blank -%}
                           {%- unless block.settings.subheading == blank -%}
                             <div class="hero__subtitle">
                               <div class="animation-cropper"><div class="animation-contents">
@@ -251,7 +251,7 @@
                               </div></div>
                             </div>
                           {%- endunless -%}
-                          {%- if block.settings.link_text != blank or block.settings.link_text_2 != blank -%}
+                          {%- if block.settings.link_text != blank or block.settings.link_text_2 != blank or block.settings.trust_text != blank -%}
                             <div class="hero__link">
                               {%- if block.settings.link_text != blank -%}
                                 <a href="{{ block.settings.link }}" class="btn{% if block.settings.color_accent contains 'rgba(0,0,0,0)' %} btn--inverse{% endif %}">
@@ -263,6 +263,13 @@
                                   {{ block.settings.link_text_2 }}
                                 </a>
                               {%- endif -%}
+                              {%- unless block.settings.trust_text == blank -%}
+                                <div class="hero__trust-text">
+                                  <div class="animation-cropper"><div class="animation-contents">
+                                    {{ block.settings.trust_text | escape }}
+                                  </div></div>
+                                </div>
+                              {%- endunless -%}
                             </div>
                           {%- endif -%}
                         {%- endif -%}
@@ -460,6 +467,12 @@
           "type": "text",
           "id": "link_text_2",
           "label": "t:sections.slideshow.blocks.slide.settings.link_text_2.label"
+        },
+        {
+          "type": "text",
+          "id": "trust_text",
+          "label": "Trust text",
+          "default": "Free shipping on orders over $75 · 4.9 stars · Loved by 2,000+ customers"
         },
         {
           "type": "color",

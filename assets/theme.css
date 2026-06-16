@@ -8520,6 +8520,13 @@ html[dir=rtl] .social-sharing__title{
     top:-2px;
   }
 
+.hero__trust-text{
+  color:var(--colorHeroText);
+  font-size:0.8em;
+  line-height:1.4;
+  margin-top:10px;
+}
+
 [data-button_style=angled] .hero__link .animation-cropper{
       padding-right:10px;
     }
@@ -8687,6 +8694,11 @@ html[dir=rtl] .social-sharing__title{
 
 .loaded .slideshow__slide.is-selected .hero__link .animation-contents,.loaded[data-aos=hero__animation] .hero__link .animation-contents{
     opacity:1;
+  }
+
+.loaded .slideshow__slide.is-selected .hero__trust-text .animation-contents,.loaded[data-aos=hero__animation] .hero__trust-text .animation-contents{
+    animation:0.8s cubic-bezier(0.26, 0.54, 0.32, 1) 1.45s forwards;
+    animation-name:rise-up;
   }
 
 .loaded .slideshow__slide.is-selected .hero__link .btn,.loaded[data-aos=hero__animation] .hero__link .btn{
