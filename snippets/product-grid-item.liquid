@@ -28,12 +28,33 @@ Arguments
     assign on_sale = true
   endif
 
+  assign preferred_variant = product.selected_or_first_available_variant
+  if default_variant_option_value != blank
+    for variant in product.variants
+      if variant.available
+        assign variant_options = variant.options | join: '||'
+        if variant_options contains default_variant_option_value
+          assign preferred_variant = variant
+          break
+        endif
+      endif
+    endfor
+  endif
+
   assign product_url = product.url | within: collection
+  if preferred_variant.id != product.selected_or_first_available_variant.id
+    assign product_url = product_url | append: '?variant=' | append: preferred_variant.id
+  endif
+
   assign default_selling_plan_id = blank
   if default_to_subscription and product.selling_plan_groups.size > 0
-    assign default_selling_plan_id = product.selected_or_first_available_variant.selling_plan_allocations.first.selling_plan.id
+    assign default_selling_plan_id = preferred_variant.selling_plan_allocations.first.selling_plan.id
     if default_selling_plan_id != blank
-      assign product_url = product_url | append: '?selling_plan=' | append: default_selling_plan_id
+      if product_url contains '?'
+        assign product_url = product_url | append: '&selling_plan=' | append: default_selling_plan_id
+      else
+        assign product_url = product_url | append: '?selling_plan=' | append: default_selling_plan_id
+      endif
     endif
   endif
 
@@ -55,7 +76,7 @@ Arguments
   endif
 -%}
 
-<div class="grid__item grid-product {{ gridView }} {% if quick_shop_enable %} grid-product__has-quick-shop{% endif %}" data-aos="row-of-{{ per_row }}" data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}"{% if default_selling_plan_id != blank %} data-default-selling-plan-id="{{ default_selling_plan_id }}"{% endif %}>
+<div class="grid__item grid-product {{ gridView }} {% if quick_shop_enable %} grid-product__has-quick-shop{% endif %}" data-aos="row-of-{{ per_row }}" data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}"{% if default_selling_plan_id != blank %} data-default-selling-plan-id="{{ default_selling_plan_id }}"{% endif %}{% if default_variant_option_value != blank %} data-default-variant-option-value="{{ default_variant_option_value | escape }}"{% endif %}{% if preferred_variant.id != product.selected_or_first_available_variant.id %} data-default-variant-id="{{ preferred_variant.id }}"{% endif %}>
   <div class="grid-product__content">
     {%- if has_custom_label -%}
       <div class="grid-product__tag grid-product__tag--custom">

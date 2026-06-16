@@ -3180,12 +3180,47 @@ theme.recentlyViewed = {
   }
 
   theme.selectFeaturedCollectionSubscription = function(productId, productSection) {
-    var sourceCard = document.querySelector('.grid-product[data-product-id="' + productId + '"][data-default-selling-plan-id]');
+    var sourceCard = document.querySelector('.grid-product[data-product-id="' + productId + '"][data-default-selling-plan-id], .grid-product[data-product-id="' + productId + '"][data-default-variant-option-value]');
     if (!sourceCard || !productSection) {
       return;
     }
 
     var sellingPlanId = sourceCard.dataset.defaultSellingPlanId;
+    var variantId = sourceCard.dataset.defaultVariantId;
+    var variantOptionValue = sourceCard.dataset.defaultVariantOptionValue;
+
+    function selectVariant() {
+      var selected = false;
+
+      if (variantOptionValue) {
+        Array.prototype.forEach.call(productSection.querySelectorAll('[data-variant-input]'), function(input) {
+          if (input.value !== variantOptionValue) {
+            return;
+          }
+
+          if (input.tagName === 'SELECT') {
+            input.value = variantOptionValue;
+          } else if (input.type === 'radio') {
+            input.checked = true;
+            input.click();
+          }
+
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+          selected = true;
+        });
+      }
+
+      if (variantId) {
+        var productSelect = productSection.querySelector('[data-product-select]');
+        if (productSelect) {
+          productSelect.value = variantId;
+          productSelect.dispatchEvent(new Event('change', { bubbles: true }));
+          selected = true;
+        }
+      }
+
+      return selected;
+    }
 
     function selectSubscription() {
       var sellingPlanField = productSection.querySelector('[name="selling_plan"]');
@@ -3230,6 +3265,8 @@ theme.recentlyViewed = {
       return false;
     }
 
+    selectVariant();
+
     if (selectSubscription()) {
       return;
     }
@@ -3237,6 +3274,7 @@ theme.recentlyViewed = {
     var attempts = 0;
     var interval = setInterval(function() {
       attempts += 1;
+      selectVariant();
       if (selectSubscription() || attempts >= 20) {
         clearInterval(interval);
       }
