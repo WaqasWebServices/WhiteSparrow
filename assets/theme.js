@@ -3174,8 +3174,74 @@ theme.recentlyViewed = {
   
       // Register potential video modal links (when video has sound)
       theme.videoModal();
+
+      theme.selectFeaturedCollectionSubscription(productId, div);
     });
   }
+
+  theme.selectFeaturedCollectionSubscription = function(productId, productSection) {
+    var sourceCard = document.querySelector('.grid-product[data-product-id="' + productId + '"][data-default-selling-plan-id]');
+    if (!sourceCard || !productSection) {
+      return;
+    }
+
+    var sellingPlanId = sourceCard.dataset.defaultSellingPlanId;
+
+    function selectSubscription() {
+      var sellingPlanField = productSection.querySelector('[name="selling_plan"]');
+
+      if (sellingPlanId && sellingPlanField) {
+        if (sellingPlanField.tagName === 'SELECT') {
+          var option = sellingPlanField.querySelector('option[value="' + sellingPlanId + '"]');
+          if (option) {
+            sellingPlanField.value = sellingPlanId;
+            sellingPlanField.dispatchEvent(new Event('change', { bubbles: true }));
+            return true;
+          }
+        } else {
+          sellingPlanField.value = sellingPlanId;
+          sellingPlanField.dispatchEvent(new Event('change', { bubbles: true }));
+          return true;
+        }
+      }
+
+      var exactInput = sellingPlanId ? productSection.querySelector('input[value="' + sellingPlanId + '"]') : null;
+      if (exactInput) {
+        exactInput.checked = true;
+        exactInput.click();
+        exactInput.dispatchEvent(new Event('change', { bubbles: true }));
+        return true;
+      }
+
+      var subscriptionControl = Array.prototype.find.call(
+        productSection.querySelectorAll('button, label, input[type="radio"]'),
+        function(control) {
+          var text = (control.innerText || control.value || control.getAttribute('aria-label') || '').toLowerCase();
+          return text.indexOf('subscribe') > -1 && text.indexOf('one-time') === -1 && text.indexOf('one time') === -1;
+        }
+      );
+
+      if (subscriptionControl) {
+        subscriptionControl.click();
+        subscriptionControl.dispatchEvent(new Event('change', { bubbles: true }));
+        return true;
+      }
+
+      return false;
+    }
+
+    if (selectSubscription()) {
+      return;
+    }
+
+    var attempts = 0;
+    var interval = setInterval(function() {
+      attempts += 1;
+      if (selectSubscription() || attempts >= 20) {
+        clearInterval(interval);
+      }
+    }, 150);
+  };
   
   // theme.Slideshow handles all flickity based sliders
   // Child navigation is only setup to work on product images

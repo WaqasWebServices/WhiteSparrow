@@ -28,6 +28,15 @@ Arguments
     assign on_sale = true
   endif
 
+  assign product_url = product.url | within: collection
+  assign default_selling_plan_id = blank
+  if default_to_subscription and product.selling_plan_groups.size > 0
+    assign default_selling_plan_id = product.selected_or_first_available_variant.selling_plan_allocations.first.selling_plan.id
+    if default_selling_plan_id != blank
+      assign product_url = product_url | append: '?selling_plan=' | append: default_selling_plan_id
+    endif
+  endif
+
   assign product_tags = product.tags | join: ','
   assign has_custom_label = false
   if product.metafields.theme.label and product.metafields.theme.label != blank
@@ -46,7 +55,7 @@ Arguments
   endif
 -%}
 
-<div class="grid__item grid-product {{ gridView }} {% if quick_shop_enable %} grid-product__has-quick-shop{% endif %}" data-aos="row-of-{{ per_row }}" data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}">
+<div class="grid__item grid-product {{ gridView }} {% if quick_shop_enable %} grid-product__has-quick-shop{% endif %}" data-aos="row-of-{{ per_row }}" data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}"{% if default_selling_plan_id != blank %} data-default-selling-plan-id="{{ default_selling_plan_id }}"{% endif %}>
   <div class="grid-product__content">
     {%- if has_custom_label -%}
       <div class="grid-product__tag grid-product__tag--custom">
@@ -186,7 +195,7 @@ Arguments
         {%- endif -%}
       </div>
 
-      <a href="{{ product.url | within: collection }}" class="grid-product__link">
+      <a href="{{ product_url }}" class="grid-product__link">
         <div class="grid-product__meta">
           <div class="grid-product__title grid-product__title--{{ settings.type_product_style }}">{{ product.title }}</div>
           {%- if settings.vendor_enable -%}
@@ -343,7 +352,7 @@ Arguments
               -%}
 
               <a
-                href="{{ variant.url | within: collection }}"
+                href="{{ variant.url | within: collection }}{% if default_selling_plan_id != blank %}&selling_plan={{ default_selling_plan_id }}{% endif %}"
                 class="color-swatch color-swatch--small color-swatch--{{ value | handle }}{% if variant.image %} color-swatch--with-image{% endif %}"
                 {% if variant.image %}
                   data-variant-id="{{ variant.id }}"
