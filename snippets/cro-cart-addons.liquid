@@ -1,0 +1,34 @@
+{%- liquid
+  assign has_tallow = false
+  assign has_lip = false
+  assign has_hair = false
+
+  for item in cart.items
+    assign item_text = item.product.title | append: ' ' | append: item.product.handle | downcase
+    if item_text contains 'tallow balm'
+      assign has_tallow = true
+    endif
+    if item_text contains 'lip'
+      assign has_lip = true
+    endif
+    if item_text contains 'hair oil'
+      assign has_hair = true
+    endif
+  endfor
+-%}
+
+{%- if has_tallow -%}
+  {%- unless has_lip and has_hair -%}
+    <div class="cro-cart-addons">
+      <div class="cro-cart-addons__title">Pairs well with your Tallow Balm</div>
+      <div class="cro-cart-addons__links">
+        {%- unless has_lip -%}
+          <a href="/collections/lip-balm-collection">Shop Lip Balm</a>
+        {%- endunless -%}
+        {%- unless has_hair -%}
+          <a href="/collections/tallow-hair-oil">Shop Hair Oil</a>
+        {%- endunless -%}
+      </div>
+    </div>
+  {%- endunless -%}
+{%- endif -%}

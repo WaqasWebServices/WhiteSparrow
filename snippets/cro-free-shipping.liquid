@@ -1,0 +1,25 @@
+{%- liquid
+  assign threshold = 7500
+  assign remaining = threshold | minus: cart.total_price
+  assign progress = cart.total_price | times: 100 | divided_by: threshold
+  if progress > 100
+    assign progress = 100
+  endif
+-%}
+
+<div
+  class="cro-free-shipping"
+  data-free-shipping-progress
+  data-threshold="{{ threshold }}"
+  aria-live="polite">
+  <div class="cro-free-shipping__message" data-free-shipping-message>
+    {%- if remaining > 0 -%}
+      You're {{ remaining | money }} away from free shipping.
+    {%- else -%}
+      You've unlocked free shipping.
+    {%- endif -%}
+  </div>
+  <div class="cro-free-shipping__track" aria-hidden="true">
+    <div class="cro-free-shipping__bar" data-free-shipping-bar style="width: {{ progress }}%;"></div>
+  </div>
+</div>

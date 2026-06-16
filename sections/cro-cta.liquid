@@ -1,0 +1,44 @@
+{%- if section.settings.divider -%}<div class="section--divider">{%- endif -%}
+
+<div class="cro-cta">
+  <div class="page-width page-width--narrow text-center">
+    {%- if section.settings.title != blank -%}
+      <h2>{{ section.settings.title | escape }}</h2>
+    {%- endif -%}
+    {%- if section.settings.text != blank -%}
+      <div class="rte">{{ section.settings.text }}</div>
+    {%- endif -%}
+    <div class="cro-cta__buttons">
+      {%- if section.settings.primary_label != blank -%}
+        <a href="{{ section.settings.primary_link }}" class="btn">{{ section.settings.primary_label | escape }}</a>
+      {%- endif -%}
+      {%- if section.settings.secondary_label != blank -%}
+        <a href="{{ section.settings.secondary_link }}" class="btn btn--secondary">{{ section.settings.secondary_label | escape }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{%- if section.settings.divider -%}</div>{%- endif -%}
+
+{% schema %}
+{
+  "name": "CRO call to action",
+  "class": "index-section",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading" },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "text", "id": "primary_label", "label": "Primary button label" },
+    { "type": "url", "id": "primary_link", "label": "Primary button link" },
+    { "type": "text", "id": "secondary_label", "label": "Secondary button label" },
+    { "type": "url", "id": "secondary_link", "label": "Secondary button link" },
+    { "type": "checkbox", "id": "divider", "label": "Show divider", "default": false }
+  ],
+  "presets": [
+    { "name": "CRO call to action" }
+  ],
+  "disabled_on": {
+    "groups": ["footer", "header", "custom.popups"]
+  }
+}
+{% endschema %}

@@ -1,0 +1,135 @@
+{%- if section.settings.divider -%}<div class="section--divider">{%- endif -%}
+
+<div class="cro-icon-grid cro-icon-grid--{{ section.settings.style }}">
+  <div class="page-width">
+    {%- if section.settings.title != blank or section.settings.text != blank -%}
+      <div class="section-header">
+        {%- if section.settings.title != blank -%}
+          <h2 class="section-header__title">{{ section.settings.title | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <div class="rte section-header__rte">{{ section.settings.text }}</div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="cro-icon-grid__items cro-icon-grid__items--{{ section.settings.columns }}">
+      {%- for block in section.blocks -%}
+        <div class="cro-icon-grid__item" {{ block.shopify_attributes }}>
+          {%- if block.settings.marker != blank -%}
+            <div class="cro-icon-grid__marker" aria-hidden="true">{{ block.settings.marker | escape }}</div>
+          {%- endif -%}
+          <h3 class="cro-icon-grid__title">{{ block.settings.title | escape }}</h3>
+          {%- if block.settings.text != blank -%}
+            <div class="cro-icon-grid__text rte">{{ block.settings.text }}</div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.button_label != blank -%}
+      <div class="cro-icon-grid__button">
+        <a href="{{ section.settings.button_link }}" class="btn btn--secondary">
+          {{ section.settings.button_label | escape }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- if section.settings.divider -%}</div>{%- endif -%}
+
+{% schema %}
+{
+  "name": "CRO icon grid",
+  "class": "index-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "default": "standard",
+      "options": [
+        { "value": "standard", "label": "Standard" },
+        { "value": "compact", "label": "Compact trust bar" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Desktop columns",
+      "default": "4",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "divider",
+      "label": "Show divider",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "marker",
+          "label": "Short marker",
+          "default": "+"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Benefit"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "CRO icon grid",
+      "blocks": [
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["footer", "header", "custom.popups"]
+  }
+}
+{% endschema %}
